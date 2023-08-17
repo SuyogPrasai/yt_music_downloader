@@ -41,7 +41,11 @@ class Downloader:
 
     def download_audio(self, url, path):
         try:
-            yt = YouTube(url)
+            yt = YouTube(
+                url,
+                use_oauth=True,
+                allow_oauth_cache=True
+            )
             audio_stream = yt.streams.filter(only_audio=True).first()
             if audio_stream:
                 audio_stream.download(output_path=path)
@@ -53,6 +57,7 @@ class Downloader:
         except Exception as e:
             print("[ERROR] An error occurred while downloading:", e)
             return 1
+
 
     def d_video(self, path):
         url = input("Enter the URL of the music video you want to download: ")
