@@ -46,10 +46,13 @@ class Downloader:
             if audio_stream:
                 audio_stream.download(output_path=path)
                 print(f"[INFO] Audio [{yt.title}] downloaded successfully at [{path}].")
+                return 0
             else:
                 print("[ERROR] No audio stream found for the given video")
+                return 1
         except Exception as e:
             print("[ERROR] An error occurred while downloading:", e)
+            return 1
 
     def d_video(self, path):
         url = input("Enter the URL of the music video you want to download: ")
@@ -69,12 +72,26 @@ class Downloader:
             pl_path.mkdir(parents=True, exist_ok=True)
 
         start = time.time()
-        for url in plist.video_urls:
-            self.download_audio(url, pl_path)
+        successful_downloads = 0
+        failed_downloads = 0
+        
+        line = "========================================"
+        print(f"\n{line}")
+        print(f"[INFO] Downloading {len(plist)} Audio Files")
+        print(f"{line}\n")
+        for index, url in enumerate(plist.video_urls, start=1):
+            result = self.download_audio(url, pl_path)
+            if result == 0:
+                successful_downloads += 1
+            else:
+                failed_downloads += 1
         total_songs = len(plist)
         end = time.time()
         total_time = end - start
-        print(f"\n[INFO] ({total_songs}) Audio(s) have been downloaded at [{path}] from [{playlist_name}] in {total_time:.2f} seconds")
+        print(f"\n[INFO] Download summary for playlist [{playlist_name}]:")
+        print(f"[Successful downloads: {successful_downloads}]")
+        print(f"[Failed downloads: {failed_downloads}]")
+        print(f"[Time taken: {total_time:.2f} seconds]")
 
     def yt_downloader(self, path, c):
         if c == "V":
